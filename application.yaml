@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: application
+metadata:
+  name: my-argo-application
+  namespace: argocd
+spec:
+  project: default # used for grouping many applications together, default, everything is saved here.
+
+  source:
+    repoURL: https://github.com/prateek041/argo-test.git
+    targetRevision: HEAD # Check always the last commit in the git repo.
+    path: dev
+  destination: # Adress of the Kubernetes cluster.
+    server: https://kubernetes.default.svc # internal service name of kubernetes API server.
+    namespace: myapp # Where to apply the above mentioned manifests ? which namespace. It will create it automatically.
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true # For creating the above mentioned namespace.
+
+    automated: # To enable automated tasks every 3 minutes.
+      selfHeal: true # Tells argoCD to override the manual actions done on the cluster.
+      prune: true # For managing the deletion of resources.
